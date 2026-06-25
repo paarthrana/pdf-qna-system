@@ -35,11 +35,13 @@ def summarise_text(client,pdf_text):
     return summary.text
 
 def ask_question(client,pdf_text,question):
-    prompt=f""" you are answering a question from the document.
+    prompt=f""" you are a professional AI study assistant.
     answer ONLY with information provided in document,if answer is not found in it
     just reply: "Answer not found in the document"
-    document:{pdf_text}
-    question:{question}
+    document:
+    {pdf_text}
+    question:
+    {question}
 """
     response=client.models.generate_content(
         model="gemini-2.5-flash",
@@ -48,18 +50,37 @@ def ask_question(client,pdf_text,question):
     return response.text
 
 def main():
-    client=load_api()
-    pdf_path="prompts.pdf"
-    pdf_text=extract_text(pdf_path)
-    while True:
-        print("======================PDF-QNA-SYSTEM============================")
-        print("type exit to quit ")
-        question=input("Ask anything from the pdf: ")
-        if question.lower()=="exit":
-            break
-        answer=ask_question(client,pdf_text,question)
-        print(answer)
+    try:
+        client=load_api()
+        pdf_path="prompts.pdf"
+        pdf_text=extract_text(pdf_path)
+        while True:
 
+            print("======================PDF-QNA-SYSTEM============================")
+            print("1. Ask a question ")
+            print("2. Summarise pdf")
+            print("3. Exit")
+        
+        
+            choice=input("Enter a choice : ")
+
+            if choice=="3":
+                break
+            elif choice=="1":
+                question=input("ASK : ")
+                answer=ask_question(client,pdf_text,question)
+                print(answer)
+                print()
+            elif choice=="2":
+                summary=summarise_text(client,pdf_text)   
+                print(summary)
+                print()
+            else:
+                print("Invalid choice. Please try again!!")
+    except Exception as e:
+        print("ERROR :")   
+        print(type(e).__name__)
+        print(e)
 
 if __name__=="__main__":
-    main()
+    main() 
